@@ -26,7 +26,10 @@ pub async fn redirect(
         }
         None => (
             StatusCode::NOT_FOUND,
-            Html(format!(include_str!("../../templates/error.html"), "404 - this page does not exist")),
+            Html(format!(
+                include_str!("../../templates/error.html"),
+                "404 - this page does not exist"
+            )),
         )
             .into_response(),
     }
