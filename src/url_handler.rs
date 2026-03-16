@@ -2,6 +2,7 @@ use std::time::{Duration, Instant};
 
 use dashmap::{DashMap, mapref::one::Ref};
 use rand::RngExt;
+use tracing::warn;
 
 #[derive(Debug, Clone)]
 pub struct ShortUrl {
@@ -60,9 +61,13 @@ impl AppState {
         for try_cnt in 0..Self::URL_GEN_RETRY_ATTEMPTS {
             let short_url_str =
                 Self::generate_random_sequence(Self::URL_GEN_DEFAULT_LENGTH + try_cnt);
-            if self.shortened.get(&short_url_str).is_some() {
+
+            // NOTE: There is a small probability this would happen BUT
+            if short_url_str == "shorten" || self.shortened.get(&short_url_str).is_some() {
+                warn!("WOW!? this guy should play the lottary");
                 continue;
             }
+
             let short_url = ShortUrl::new(url, &short_url_str, duration);
             self.shortened.insert(short_url_str, short_url.clone());
             return Some(short_url);
