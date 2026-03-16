@@ -1,8 +1,9 @@
 mod url_handler;
+use dotenvy::dotenv;
 use tracing::info;
 use url_handler::AppState;
 
-use std::{sync::Arc, time::Duration};
+use std::{env, sync::Arc, time::Duration};
 
 mod routes;
 use routes::{homepage, redirect, shorten};
@@ -26,6 +27,12 @@ fn spawn_purge_task(state: Arc<AppState>) {
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
+
+    dotenv().ok();
+    let host = env::var("HOST").unwrap_or_else(|_| "127.0.0.1".into());
+    let port = env::var("PORT").unwrap_or_else(|_| "3000".into());
+    let addr = format!("{}:{}", host, port);
+
     let state = Arc::new(AppState::new());
 
     spawn_purge_task(Arc::clone(&state));
@@ -36,8 +43,9 @@ async fn main() {
         .route("/{short_url}", get(redirect::redirect))
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("192.168.1.7:3000")
+    let listener = tokio::net::TcpListener::bind(&addr)
         .await
         .unwrap();
+    println!("listening on {}", addr);
     axum::serve(listener, app).await.unwrap();
 }

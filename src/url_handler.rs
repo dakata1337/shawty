@@ -1,8 +1,11 @@
-use std::time::{Duration, Instant};
+use std::{
+    env,
+    time::{Duration, Instant},
+};
 
 use dashmap::{DashMap, mapref::one::Ref};
 use rand::RngExt;
-use tracing::warn;
+use tracing::{info, warn};
 
 #[derive(Debug, Clone)]
 pub struct ShortUrl {
@@ -40,8 +43,8 @@ pub struct AppState {
 
 #[allow(unused)]
 impl AppState {
-    const URL_GEN_RETRY_ATTEMPTS: usize = 5;
-    const URL_GEN_DEFAULT_LENGTH: usize = 5;
+    const DEFAULT_URL_GEN_RETRY_ATTEMPTS: usize = 5;
+    const DEFAULT_URL_GEN_DEFAULT_LENGTH: usize = 5;
 
     pub fn new() -> Self {
         Self {
@@ -58,9 +61,20 @@ impl AppState {
     }
 
     pub fn create_short_url(&self, url: &str, duration: Option<Duration>) -> Option<ShortUrl> {
-        for try_cnt in 0..Self::URL_GEN_RETRY_ATTEMPTS {
-            let short_url_str =
-                Self::generate_random_sequence(Self::URL_GEN_DEFAULT_LENGTH + try_cnt);
+        let url_gen_retry = env::var("URL_GEN_RETRY_ATTEMPTS")
+            .ok()
+            .and_then(|s| s.parse::<usize>().ok())
+            .unwrap_or(Self::DEFAULT_URL_GEN_RETRY_ATTEMPTS);
+
+        let url_gen_length = env::var("URL_GEN_DEFAULT_LENGTH")
+            .ok()
+            .and_then(|s| s.parse::<usize>().ok())
+            .unwrap_or(Self::DEFAULT_URL_GEN_DEFAULT_LENGTH);
+
+        info!("len {}  retry {}", url_gen_length, url_gen_retry);
+
+        for try_cnt in 0..url_gen_retry {
+            let short_url_str = Self::generate_random_sequence(url_gen_length + try_cnt);
 
             // NOTE: There is a small probability this would happen BUT
             if short_url_str == "shorten" || self.shortened.get(&short_url_str).is_some() {
