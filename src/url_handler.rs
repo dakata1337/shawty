@@ -44,7 +44,7 @@ pub struct AppState {
 #[allow(unused)]
 impl AppState {
     const DEFAULT_URL_GEN_RETRY_ATTEMPTS: usize = 5;
-    const DEFAULT_URL_GEN_DEFAULT_LENGTH: usize = 5;
+    const DEFAULT_URL_GEN_LENGTH: usize = 5;
 
     pub fn new() -> Self {
         Self {
@@ -66,10 +66,10 @@ impl AppState {
             .and_then(|s| s.parse::<usize>().ok())
             .unwrap_or(Self::DEFAULT_URL_GEN_RETRY_ATTEMPTS);
 
-        let url_gen_length = env::var("URL_GEN_DEFAULT_LENGTH")
+        let url_gen_length = env::var("URL_GEN_LENGTH")
             .ok()
             .and_then(|s| s.parse::<usize>().ok())
-            .unwrap_or(Self::DEFAULT_URL_GEN_DEFAULT_LENGTH);
+            .unwrap_or(Self::DEFAULT_URL_GEN_LENGTH);
 
         info!("len {}  retry {}", url_gen_length, url_gen_retry);
 

@@ -43,9 +43,7 @@ async fn main() {
         .route("/{short_url}", get(redirect::redirect))
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind(&addr)
-        .await
-        .unwrap();
+    let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
     println!("listening on {}", addr);
     axum::serve(listener, app).await.unwrap();
 }
