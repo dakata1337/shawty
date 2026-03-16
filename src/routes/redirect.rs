@@ -3,7 +3,7 @@ use std::sync::Arc;
 use axum::{
     extract::{Path, State},
     http::StatusCode,
-    response::{IntoResponse, Redirect},
+    response::{Html, IntoResponse, Redirect},
 };
 use tracing::info;
 
@@ -24,6 +24,10 @@ pub async fn redirect(
             );
             Redirect::temporary(url.get_original_url()).into_response()
         }
-        None => (StatusCode::NOT_FOUND, "404 - Short URL not found").into_response(),
+        None => (
+            StatusCode::NOT_FOUND,
+            Html(format!(include_str!("../../templates/error.html"), "404 - this page does not exist")),
+        )
+            .into_response(),
     }
 }

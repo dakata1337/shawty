@@ -39,7 +39,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(homepage::homapage))
-        .route("/shorten", post(shorten::shorten))
+        .route("/shorten", post(shorten::shorten).get(homepage::homapage))
         .route("/{short_url}", get(redirect::redirect))
         .with_state(state);
 
