@@ -1,6 +1,6 @@
 mod url_handler;
 use dotenvy::dotenv;
-use tracing::info;
+use tracing::{debug, info};
 use url_handler::AppState;
 
 use std::{env, sync::Arc, time::Duration};
@@ -19,7 +19,7 @@ fn spawn_purge_task(state: Arc<AppState>) {
             std::thread::sleep(Duration::from_secs(10));
 
             let purged_count = state.purge_expired_urls();
-            info!("Purged {} expired short URLs", purged_count);
+            debug!("Purged {} expired short URLs", purged_count);
         }
     });
 }
@@ -44,6 +44,6 @@ async fn main() {
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
-    println!("listening on {}", addr);
+    info!("listening on {}", addr);
     axum::serve(listener, app).await.unwrap();
 }

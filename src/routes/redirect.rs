@@ -5,7 +5,7 @@ use axum::{
     http::StatusCode,
     response::{Html, IntoResponse, Redirect},
 };
-use tracing::info;
+use tracing::debug;
 
 use crate::url_handler::AppState;
 
@@ -17,7 +17,7 @@ pub async fn redirect(
 
     match maybe_url {
         Some(url) => {
-            info!(
+            debug!(
                 "user gave {} returning -> {:?}",
                 short_url,
                 url.get_original_url()

@@ -3,7 +3,7 @@ use std::{sync::Arc, time::Duration};
 use serde::Deserialize;
 
 use axum::{Form, extract::State, response::Html};
-use tracing::info;
+use tracing::debug;
 use url::Url;
 
 use crate::url_handler::AppState;
@@ -52,7 +52,7 @@ pub async fn shorten(
     match short {
         Some(short) => {
             let short_url = short.get_shortended_url();
-            info!(
+            debug!(
                 "generated {} -> {} ({:?})",
                 short_url,
                 short.get_original_url(),

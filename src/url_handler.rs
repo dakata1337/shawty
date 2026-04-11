@@ -5,7 +5,7 @@ use std::{
 
 use dashmap::{DashMap, mapref::one::Ref};
 use rand::RngExt;
-use tracing::{info, warn};
+use tracing::{debug, warn};
 
 #[derive(Debug, Clone)]
 pub struct ShortUrl {
@@ -71,7 +71,7 @@ impl AppState {
             .and_then(|s| s.parse::<usize>().ok())
             .unwrap_or(Self::DEFAULT_URL_GEN_LENGTH);
 
-        info!("len {}  retry {}", url_gen_length, url_gen_retry);
+        debug!("len {}  retry {}", url_gen_length, url_gen_retry);
 
         for try_cnt in 0..url_gen_retry {
             let short_url_str = Self::generate_random_sequence(url_gen_length + try_cnt);
